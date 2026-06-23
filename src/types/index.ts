@@ -66,6 +66,7 @@ export interface ScanResult {
 }
 
 export interface DetectedIngredient {
+  id: string
   name: string
   emoji: string
   confidence: number
