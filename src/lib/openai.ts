@@ -1,9 +1,13 @@
 import OpenAI from 'openai'
 import type { DetectedIngredient } from '@/types'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+function getOpenAI() {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY environment variable is not set')
+  }
+  return new OpenAI({ apiKey })
+}
 
 const INGREDIENT_SYSTEM_PROMPT = `You are an AI food recognition assistant specialized in identifying ingredients from refrigerator photos.
 
@@ -27,6 +31,7 @@ export async function analyzeFridgeImage(
   imageBase64: string
 ): Promise<DetectedIngredient[]> {
   try {
+    const openai = getOpenAI()
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -126,6 +131,7 @@ export async function generateRecipes(
       })
       .join('\n')
 
+    const openai = getOpenAI()
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
